@@ -25,7 +25,7 @@ def find_all_questions(days: int, *tags: str, hours: int = 0, minutes: int = 0) 
             'tagged': '; '.join(tags),
             'sort': 'creation',
             'site': 'stackoverflow',
-            'pagesize': '30',
+            'pagesize': '100',
             'page': str(page),
             'order': 'desc'
         }
