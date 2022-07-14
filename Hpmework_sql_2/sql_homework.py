@@ -89,12 +89,11 @@ for row in data:
     elif row['model'] == 'shop':
         shops.append(Shop(name=row['fields']['name']))
     elif row['model'] == 'stock':
-        stocks.append(
-            Stock(id_book=row['fields']['id_book'], id_shop=row['fields']['id_shop'], count=row['fields']['count']))
+        stocks.append(Stock(id_book=row['fields']['id_book'], id_shop=row['fields']['id_shop'],
+                            count=row['fields']['count']))
     elif row['model'] == 'sale':
-        sales.append(
-            Sale(price=row['fields']['price'], date_sale=row['fields']['date_sale'], id_stock=row['fields']['id_stock'],
-                 count=row['fields']['count']))
+        sales.append(Sale(price=row['fields']['price'], date_sale=row['fields']['date_sale'],
+                          id_stock=row['fields']['id_stock'], count=row['fields']['count']))
 
 session.add_all(publishers)
 session.add_all(books)
@@ -105,9 +104,13 @@ session.commit()
 
 
 def select_publisher():
-    id = input('Input id or name of a publisher: ')
-    for pb in session.query(Publisher).filter(Publisher.id == int(id) if id.isdigit() else Publisher.name == id):
-        print(pb.id, pb.name)
+    pb = input('Input id or name of a publisher: ')
+    for row in (session.query(Publisher, Book, Stock, Shop)
+            .filter(Book.id_publisher == Publisher.id)
+            .filter(Stock.id_book == Book.id)
+            .filter(Shop.id == Stock.id_shop)
+            .filter(Publisher.id == int(pb) if pb.isdigit() else Publisher.name == id).distinct(Shop.name)):
+        print(row.Publisher.id, row.Publisher.name, '-', row.Shop.name)
 
 
 select_publisher()
